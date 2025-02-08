@@ -4,6 +4,7 @@ import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/enco
 import { sha256 } from "@oslojs/crypto/sha2";
 import type { User, Session } from "@prisma/client";
 import { db } from "@/lib/db";
+import { cookies } from "next/headers";
 
 export function generateSessionToken(): string {
 	const bytes = new Uint8Array(20);
@@ -20,9 +21,9 @@ export async function createSession(token: string, userId: number): Promise<Sess
 		expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30)
 	};
 	await db
-    .session.create({
-		data: session
-	});
+		.session.create({
+			data: session
+		});
 	return session;
 }
 
@@ -65,3 +66,26 @@ export async function invalidateSession(sessionId: string): Promise<void> {
 export type SessionValidationResult =
 	| { session: Session; user: User }
 	| { session: null; user: null };
+
+
+	export async function setSessionTokenCookie(token: string, expiresAt: Date): Promise<void> {
+		const cookieStore = await cookies();
+		cookieStore.set("session", token, {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: process.env.NODE_ENV === "production",
+			expires: expiresAt,
+			path: "/"
+		});
+	}
+	
+	export async function deleteSessionTokenCookie(): Promise<void> {
+		const cookieStore = await cookies();
+		cookieStore.set("session", "", {
+			httpOnly: true,
+			sameSite: "lax",
+			secure: process.env.NODE_ENV === "production",
+			maxAge: 0,
+			path: "/"
+		});
+	}
