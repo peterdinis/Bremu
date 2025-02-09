@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 				maxAge: 60 * 60 * 24 * 30,
 				sameSite: "lax",
 				httpOnly: true,
-				secure: process.env.NODE_ENV === "production"
+				secure: process.env.NODE_ENV === "production",
 			});
 		}
 		return response;
@@ -21,7 +21,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 	const hostHeader = request.headers.get("Host");
 	if (originHeader === null || hostHeader === null) {
 		return new NextResponse(null, {
-			status: 403
+			status: 403,
 		});
 	}
 	let origin: URL;
@@ -29,12 +29,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 		origin = new URL(originHeader);
 	} catch {
 		return new NextResponse(null, {
-			status: 403
+			status: 403,
 		});
 	}
 	if (origin.host !== hostHeader) {
 		return new NextResponse(null, {
-			status: 403
+			status: 403,
 		});
 	}
 	return NextResponse.next();
