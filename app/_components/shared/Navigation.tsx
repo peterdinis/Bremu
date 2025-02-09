@@ -2,6 +2,7 @@
 
 import { FC, useState } from "react";
 import { Heart, User, Menu, Search, ShoppingCart, Home, Truck, Package, Gift, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const categories = [
     { id: 'home', name: 'Home & Living', icon: <Home size={20} /> },
@@ -9,7 +10,6 @@ const categories = [
     { id: 'electronics', name: 'Electronics', icon: <Truck size={20} /> },
     { id: 'gifts', name: 'Gifts', icon: <Gift size={20} /> },
 ];
-
 
 const Navigation: FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -64,8 +64,7 @@ const Navigation: FC = () => {
                             <button
                                 key={category.id}
                                 onClick={() => handleCategoryClick(category.id)}
-                                className={`category-btn flex flex-col items-center min-w-[80px] ${selectedCategory === category.id ? 'text-[#ff2b43] active' : 'text-gray-600 hover:text-[#ff2b43]'
-                                    }`}
+                                className={`category-btn flex flex-col items-center min-w-[80px] ${selectedCategory === category.id ? 'text-[#ff2b43] active' : 'text-gray-600 hover:text-[#ff2b43]'}`}
                             >
                                 {category.icon}
                                 <span className="text-sm mt-1">{category.name}</span>
@@ -75,37 +74,44 @@ const Navigation: FC = () => {
                 </div>
             </nav>
 
-            {isMenuOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden mobile-menu-overlay">
-                    <div className="bg-white w-64 h-full mobile-menu">
-                        <div className="p-4 border-b">
-                            <button
-                                onClick={() => setIsMenuOpen(false)}
-                                className="text-gray-500 transition-transform duration-200 hover:scale-110"
-                            >
-                                <X />
-                            </button>
-                        </div>
-                        <div className="p-4">
-                            <div className="space-y-4">
-                                {categories.map((category) => (
-                                    <button
-                                        key={category.id}
-                                        onClick={() => handleCategoryClick(category.id)}
-                                        className={`flex items-center space-x-3 w-full transition-all duration-200 hover:translate-x-2 ${selectedCategory === category.id ? 'text-[#ff2b43]' : 'text-gray-600 hover:text-[#ff2b43]'
-                                            }`}
-                                    >
-                                        {category.icon}
-                                        <span>{category.name}</span>
-                                    </button>
-                                ))}
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <motion.div
+                        initial={{ x: "-100%" }}
+                        animate={{ x: 0 }}
+                        exit={{ x: "-100%" }}
+                        transition={{ duration: 0.3 }}
+                        className="fixed inset-0 bg-black bg-opacity-50 z-50 lg:hidden"
+                    >
+                        <div className="bg-white w-64 h-full">
+                            <div className="p-4 border-b">
+                                <button
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="text-gray-500 transition-transform duration-200 hover:scale-110"
+                                >
+                                    <X />
+                                </button>
+                            </div>
+                            <div className="p-4">
+                                <div className="space-y-4">
+                                    {categories.map((category) => (
+                                        <button
+                                            key={category.id}
+                                            onClick={() => handleCategoryClick(category.id)}
+                                            className={`flex items-center space-x-3 w-full transition-all duration-200 hover:translate-x-2 ${selectedCategory === category.id ? 'text-[#ff2b43]' : 'text-gray-600 hover:text-[#ff2b43]'}`}
+                                        >
+                                            {category.icon}
+                                            <span>{category.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </header>
-    )
+    );
 }
 
-export default Navigation
+export default Navigation;
